@@ -101,4 +101,33 @@ class NN:
             b[i] -= learning_rate * db[i]
     
         self.W = W
-        self.b = b    
+        self.b = b
+        
+        
+        
+    def train(self,X,y,batch_size,epochs,metrics):
+        training_loss = []
+        
+        y_opt = to_categorical(y)
+        
+        for i in range(epochs):
+            
+            for j in range(int(X.shape[0]/batch_size) - 1):
+                Y_ = self.forward_NeuralNetwork(X[j*batch_size:(j+1)*batch_size])
+                l = self.loss(y_opt[j*batch_size:(j+1)*batch_size],Y_)
+
+                self.backward_NeuralNetwork(X[j*batch_size:(j+1)*batch_size],y_opt[j*batch_size:   (j+1)*batch_size])
+                training_loss.append(l)
+
+            print("loss: ",l)
+            return training_loss
+        def predict(self,X):
+        y_out = self.forward_NeuralNetwork(X)
+        print(y_out)
+        return np.argmax(y_out,axis = 1)
+    def loss(self,y_opt,p):
+        l = np.mean(y_opt*np.log(p))
+        return -l
+    
+    
+    
