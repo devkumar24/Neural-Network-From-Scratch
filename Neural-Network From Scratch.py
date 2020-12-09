@@ -107,7 +107,7 @@ class MLP:
         return A[-1]
     
     # function to do backpropagation in Multi Layer Perceptron
-    def backward_propagation(self,X,y,learning_rate = 0.001):
+    def backward_propagation(self,X,y,learning_rate = 0.01):
         '''
         This function backward_propagation is initally taking self.model_layers,
         self.W,self.b,self.activation_units these 4 will help to do backpropagation 
@@ -230,9 +230,6 @@ class MLP:
         $ metrics is hyper parameter
         '''
         training_loss = []
-        train_loss_dic = {}
-        metrics_ = []
-        metrics_dic = {}
         y_opt = to_categorical(y)
         
         for i in range(epochs):
@@ -240,22 +237,16 @@ class MLP:
             for j in range(int(X.shape[0]/batch_size) - 1):
                 Y_ = self.forward_propagation(X[j*batch_size:(j+1)*batch_size])
                 l = self.loss(y_opt[j*batch_size:(j+1)*batch_size],Y_)
-                if metrics == "accuracy" or metrics == "Accuracy" or metrics == "ACCURACY":
-                    met = (sum(Y_ == y)/y.shape[0])*100
-                else:
-                    met = None
                 self.backward_propagation(X[j*batch_size:(j+1)*batch_size],y_opt[j*batch_size:(j+1)*batch_size])
                 training_loss.append(l)
-                metrics_.append(met)
-                train_loss_dic[i] = l
-                metrics_dic[i] = l
-                if train_loss_dic[i] == None:
-                    train_loss_dic[i] = l
-                else:
-                    train_loss_dic[i] = l
             print(" Training Loss----->  ",l)
             
-        
-        return train_loss_dic,metrics_dic
+        y_pred = []
+        if metrics == "accuracy":
+            for i in range(X.shape[0]):
+                output,index = self.predict(X[i])
+                y_pred.append(index)
+            acc = np.sum(y_pred == y)/y.shape[0]
+        return training_loss,acc*100
     
     
